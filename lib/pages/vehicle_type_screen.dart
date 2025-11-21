@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rental_booking_app/pages/vehicle_model_screen.dart';
 
 class VehicleTypeScreen extends StatefulWidget {
   const VehicleTypeScreen({super.key});
@@ -30,7 +31,7 @@ class _VehicleTypeScreenState extends State<VehicleTypeScreen> {
             Expanded(
               child: ListView.separated(
                 itemCount: vehicleTypes.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 14),
+                separatorBuilder: (_, _) => const SizedBox(height: 14),
                 itemBuilder: (context, index) {
                   String type = vehicleTypes[index];
                   bool isSelected = selectedType == type;
@@ -94,7 +95,12 @@ class _VehicleTypeScreenState extends State<VehicleTypeScreen> {
           onPressed: selectedType == null
               ? null
               : () {
-                  // TODO: Navigate to Vehicle Model Screen later
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => VehicleModelScreen(),
+                    ),
+                  );
                 },
           style: ElevatedButton.styleFrom(
             minimumSize: const Size(double.infinity, 55),
