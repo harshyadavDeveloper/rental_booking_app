@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rental_booking_app/pages/date_range_screen.dart';
 
 class VehicleModelScreen extends StatefulWidget {
   const VehicleModelScreen({super.key});
@@ -123,7 +124,10 @@ class _VehicleModelScreenState extends State<VehicleModelScreen> {
           onPressed: selectedModel == null
               ? null
               : () {
-                  // TODO: Navigate to date picker screen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => DateRangeScreen()),
+                  );
                 },
           style: ElevatedButton.styleFrom(
             minimumSize: const Size(double.infinity, 55),
