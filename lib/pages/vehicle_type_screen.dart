@@ -1,46 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:rental_booking_app/pages/vehicle_type_screen.dart';
 
-class WheelsScreen extends StatefulWidget {
-  const WheelsScreen({super.key});
+class VehicleTypeScreen extends StatefulWidget {
+  const VehicleTypeScreen({super.key});
 
   @override
-  State<WheelsScreen> createState() => _WheelsScreenState();
+  State<VehicleTypeScreen> createState() => _VehicleTypeScreenState();
 }
 
-class _WheelsScreenState extends State<WheelsScreen> {
-  int? selectedWheels;
+class _VehicleTypeScreenState extends State<VehicleTypeScreen> {
+  String? selectedType;
 
-  final List<int> wheelsOptions = [2, 3, 4, 6]; // temporary static UI data
+  final List<String> vehicleTypes = ["Car", "Bike", "Truck"];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Number of Wheels"), elevation: 0),
+      appBar: AppBar(title: const Text("Vehicle Type"), elevation: 0),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Select number of wheels",
+              "Select vehicle type",
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 25),
 
             Expanded(
               child: ListView.separated(
-                itemCount: wheelsOptions.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemCount: vehicleTypes.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 14),
                 itemBuilder: (context, index) {
-                  final number = wheelsOptions[index];
-                  final isSelected = selectedWheels == number;
+                  String type = vehicleTypes[index];
+                  bool isSelected = selectedType == type;
 
                   return InkWell(
-                    borderRadius: BorderRadius.circular(12),
                     onTap: () {
-                      setState(() => selectedWheels = number);
+                      setState(() => selectedType = type);
                     },
+                    borderRadius: BorderRadius.circular(12),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       padding: const EdgeInsets.symmetric(
@@ -48,21 +47,21 @@ class _WheelsScreenState extends State<WheelsScreen> {
                         horizontal: 16,
                       ),
                       decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: isSelected
-                              ? Colors.blueAccent
+                              ? Colors.blue
                               : Colors.grey.shade400,
                           width: 2,
                         ),
-                        borderRadius: BorderRadius.circular(12),
                         color: isSelected
-                            ? Colors.blue.withOpacity(0.08)
+                            ? Colors.blue.withOpacity(0.07)
                             : Colors.transparent,
                       ),
                       child: Row(
                         children: [
                           Text(
-                            "$number Wheels",
+                            type,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: isSelected
@@ -87,18 +86,15 @@ class _WheelsScreenState extends State<WheelsScreen> {
           ],
         ),
       ),
+
+      /// Bottom "Next" button with validation
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(20),
         child: ElevatedButton(
-          onPressed: selectedWheels == null
+          onPressed: selectedType == null
               ? null
               : () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const VehicleTypeScreen(),
-                    ),
-                  );
+                  // TODO: Navigate to Vehicle Model Screen later
                 },
           style: ElevatedButton.styleFrom(
             minimumSize: const Size(double.infinity, 55),
