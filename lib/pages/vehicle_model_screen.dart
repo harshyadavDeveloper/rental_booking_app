@@ -48,7 +48,7 @@ class _VehicleModelScreenState extends State<VehicleModelScreen> {
             Expanded(
               child: ListView.separated(
                 itemCount: models.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 16),
+                separatorBuilder: (_, _) => const SizedBox(height: 16),
                 itemBuilder: (context, index) {
                   final model = models[index];
                   final bool isSelected = selectedModel == model["name"];
