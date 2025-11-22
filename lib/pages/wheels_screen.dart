@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rental_booking_app/controllers/vehicle_controller.dart';
 import 'package:rental_booking_app/pages/vehicle_type_screen.dart';
+import 'package:rental_booking_app/utils/logger.dart';
 
 class WheelsScreen extends StatefulWidget {
   const WheelsScreen({super.key});
@@ -62,7 +63,7 @@ class _WheelsScreenState extends State<WheelsScreen> {
                           borderRadius: BorderRadius.circular(12),
                           onTap: () {
                             setState(() => selectedWheels = number);
-                            print('selected wheels: $selectedWheels');
+                            Logger.info('selected wheels: $selectedWheels');
                           },
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),

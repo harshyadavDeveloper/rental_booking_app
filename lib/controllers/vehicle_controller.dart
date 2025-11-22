@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:rental_booking_app/models/vehicle_model.dart';
+import 'package:rental_booking_app/utils/logger.dart';
 import 'package:rental_booking_app/utils/urls.dart';
 import '../models/vehicle_type_model.dart';
 
@@ -61,7 +62,7 @@ class VehicleController extends ChangeNotifier {
         return [VehicleModel.fromJson(json)];
       }
     } catch (e) {
-      debugPrint("Model fetch error: $e");
+      Logger.error("Model fetch error: $e");
     }
     return [];
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rental_booking_app/controllers/booking_controller.dart';
 import 'package:rental_booking_app/controllers/vehicle_controller.dart';
 import 'package:rental_booking_app/pages/name_screen.dart';
 
@@ -12,7 +13,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => VehicleController())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => VehicleController()),
+        ChangeNotifierProvider(create: (_) => BookingController()),
+      ],
       child: MaterialApp(
         title: 'Flutter Demo',
 

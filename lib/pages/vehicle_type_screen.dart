@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rental_booking_app/controllers/vehicle_controller.dart';
+import 'package:rental_booking_app/utils/logger.dart';
 import 'vehicle_model_screen.dart';
 
 class VehicleTypeScreen extends StatefulWidget {
@@ -108,7 +109,7 @@ class _VehicleTypeScreenState extends State<VehicleTypeScreen> {
                   final selectedType = filteredTypes.firstWhere(
                     (e) => e.id == selectedTypeId,
                   );
-                  print("selected type $selectedType");
+                  Logger.info("selected type ${selectedType.id}");
 
                   Navigator.push(
                     context,
