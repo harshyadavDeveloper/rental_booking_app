@@ -1,132 +1,138 @@
 import 'package:flutter/material.dart';
-import 'package:rental_booking_app/pages/date_range_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:rental_booking_app/controllers/vehicle_controller.dart';
+import 'package:rental_booking_app/utils/logger.dart';
+import '../models/vehicle_type_model.dart';
+import 'date_range_screen.dart';
 
 class VehicleModelScreen extends StatefulWidget {
-  const VehicleModelScreen({super.key});
+  final VehicleTypeModel vehicleType;
+
+  const VehicleModelScreen({super.key, required this.vehicleType});
 
   @override
   State<VehicleModelScreen> createState() => _VehicleModelScreenState();
 }
 
 class _VehicleModelScreenState extends State<VehicleModelScreen> {
-  String? selectedModel;
+  String? selectedModelId;
 
-  // Temporary hardcoded list of models
-  final List<Map<String, String>> models = [
-    {
-      "name": "Swift",
-      "image":
-          "https://upload.wikimedia.org/wikipedia/commons/7/7c/2018_Maruti_Suzuki_Swift_front_view.jpg",
-    },
-    {
-      "name": "R15",
-      "image":
-          "https://www.yamaha-motor-india.com/theme/v3/image/mediacenter/R15.png",
-    },
-    {
-      "name": "Ashok Leyland Truck",
-      "image":
-          "https://upload.wikimedia.org/wikipedia/commons/9/9d/Ashok_Leyland_Truck.jpg",
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getVehicleModels();
+    });
+  }
+
+  Future<void> getVehicleModels() async {
+    final controller = Provider.of<VehicleController>(context, listen: false);
+    controller.fetchVehicleModels(widget.vehicleType.vehicles);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final controller = Provider.of<VehicleController>(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Select Model"), elevation: 0),
+      appBar: AppBar(title: const Text("Select Model")),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Choose the specific model",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
+        child: controller.modelLoading
+            ? const Center(child: CircularProgressIndicator())
+            : controller.modelError != null
+            ? Center(child: Text(controller.modelError!))
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Choose the specific model",
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
 
-            Expanded(
-              child: ListView.separated(
-                itemCount: models.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 16),
-                itemBuilder: (context, index) {
-                  final model = models[index];
-                  final bool isSelected = selectedModel == model["name"];
+                  Expanded(
+                    child: ListView.separated(
+                      itemCount: controller.vehicleModels.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 16),
+                      itemBuilder: (context, index) {
+                        final model = controller.vehicleModels[index];
+                        final isSelected = selectedModelId == model.id;
 
-                  return InkWell(
-                    onTap: () => setState(() {
-                      selectedModel = model["name"];
-                    }),
-                    borderRadius: BorderRadius.circular(14),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: isSelected
-                              ? Colors.blue
-                              : Colors.grey.shade400,
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(14),
-                        color: isSelected
-                            ? Colors.blue.withOpacity(0.08)
-                            : Colors.transparent,
-                      ),
-                      child: Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              model["image"]!,
-                              height: 60,
-                              width: 100,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => const Icon(
-                                Icons.image_not_supported,
-                                size: 50,
+                        return InkWell(
+                          onTap: () =>
+                              setState(() => selectedModelId = model.id),
+                          borderRadius: BorderRadius.circular(14),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: isSelected
+                                    ? Colors.blue
+                                    : Colors.grey.shade400,
+                                width: 2,
                               ),
+                              color: isSelected
+                                  ? Colors.blue.withValues(alpha: 0.08)
+                                  : Colors.transparent,
+                            ),
+                            child: Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.network(
+                                    model.imageUrl ?? "",
+                                    height: 60,
+                                    width: 100,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, _, _) =>
+                                        const Icon(Icons.drive_eta, size: 50),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Text(
+                                    model.name,
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: isSelected
+                                          ? FontWeight.bold
+                                          : FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                Icon(
+                                  isSelected
+                                      ? Icons.radio_button_checked
+                                      : Icons.radio_button_off,
+                                  color: isSelected ? Colors.blue : Colors.grey,
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Text(
-                              model["name"]!,
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: isSelected
-                                    ? FontWeight.bold
-                                    : FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          Icon(
-                            isSelected
-                                ? Icons.radio_button_checked
-                                : Icons.radio_button_off,
-                            color: isSelected ? Colors.blue : Colors.grey,
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
 
-      // Bottom CTA
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(20),
         child: ElevatedButton(
-          onPressed: selectedModel == null
+          onPressed: selectedModelId == null
               ? null
               : () {
+                  Logger.info('selected model id: $selectedModelId');
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => DateRangeScreen()),
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          DateRangeScreen(modelId: selectedModelId!),
+                    ),
                   );
                 },
           style: ElevatedButton.styleFrom(
