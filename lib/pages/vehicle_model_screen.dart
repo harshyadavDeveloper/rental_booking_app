@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:rental_booking_app/models/vehicle_type_model.dart';
 import 'package:rental_booking_app/pages/date_range_screen.dart';
 
 class VehicleModelScreen extends StatefulWidget {
-  const VehicleModelScreen({super.key});
+  final VehicleTypeModel vehicleType;
+
+  const VehicleModelScreen({super.key, required this.vehicleType});
 
   @override
   State<VehicleModelScreen> createState() => _VehicleModelScreenState();
