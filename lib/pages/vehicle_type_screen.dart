@@ -43,7 +43,7 @@ class _VehicleTypeScreenState extends State<VehicleTypeScreen> {
                   Expanded(
                     child: ListView.separated(
                       itemCount: filteredTypes.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 14),
+                      separatorBuilder: (_, _) => const SizedBox(height: 14),
                       itemBuilder: (context, index) {
                         final type = filteredTypes[index];
                         final isSelected = selectedTypeId == type.id;
@@ -68,7 +68,7 @@ class _VehicleTypeScreenState extends State<VehicleTypeScreen> {
                                 width: 2,
                               ),
                               color: isSelected
-                                  ? Colors.blue.withOpacity(0.07)
+                                  ? Colors.blue.withValues(alpha: 0.07)
                                   : Colors.transparent,
                             ),
                             child: Row(
@@ -108,13 +108,13 @@ class _VehicleTypeScreenState extends State<VehicleTypeScreen> {
                   final selectedType = filteredTypes.firstWhere(
                     (e) => e.id == selectedTypeId,
                   );
+                  print("selected type $selectedType");
 
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => VehicleModelScreen(
-                        vehicleType: selectedType, // pass full object
-                      ),
+                      builder: (_) =>
+                          VehicleModelScreen(vehicleType: selectedType),
                     ),
                   );
                 },
