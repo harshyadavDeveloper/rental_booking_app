@@ -4,6 +4,8 @@ import 'package:rental_booking_app/controllers/booking_controller.dart';
 import 'package:rental_booking_app/controllers/booking_progress_provider.dart';
 import 'package:rental_booking_app/pages/name_screen.dart';
 import 'package:rental_booking_app/utils/logger.dart';
+import 'package:rental_booking_app/widgets/booking_summary_dialog.dart';
+import 'package:rental_booking_app/widgets/primary_button.dart';
 
 class DateRangeScreen extends StatefulWidget {
   final String modelId;
@@ -135,8 +137,8 @@ class _DateRangeScreenState extends State<DateRangeScreen> {
                 listen: false,
               );
 
-              await progressProvider.resetProgress(); // clear db + memory reset
-              await progressProvider.loadProgress(); // load fresh empty data
+              await progressProvider.resetProgress();
+              await progressProvider.loadProgress();
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (_) => const NameScreen()),
@@ -255,39 +257,39 @@ class _DateRangeScreenState extends State<DateRangeScreen> {
                       minimumSize: const Size(double.infinity, 55),
                     ),
                   ),
+
+                  SizedBox(height: 40),
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: PrimaryButton(
+                      text: "Confirm Booking",
+                      disabled: selectedRange == null,
+                      onPressed: () async {
+                        Logger.info("Selected range: $selectedRange");
+
+                        final progressProvider =
+                            Provider.of<BookingProgressProvider>(
+                              context,
+                              listen: false,
+                            );
+
+                        await progressProvider.updateStartEndDates(
+                          selectedRange!.start,
+                          selectedRange!.end,
+                        );
+
+                        if (mounted) {
+                          showDialog(
+                            context: context,
+                            builder: (_) => const BookingSummaryDialog(),
+                          );
+                        }
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
-
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(20),
-        child: ElevatedButton(
-          onPressed: selectedRange == null
-              ? null
-              : () async {
-                  Logger.info("Selected range: $selectedRange");
-
-                  final progressProvider = Provider.of<BookingProgressProvider>(
-                    context,
-                    listen: false,
-                  );
-
-                  await progressProvider.updateStartEndDates(
-                    selectedRange!.start,
-                    selectedRange!.end,
-                  );
-
-                  if (mounted) showSummaryDialog(context);
-                },
-          style: ElevatedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 55),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          child: const Text("Confirm Booking"),
-        ),
-      ),
     );
   }
 }

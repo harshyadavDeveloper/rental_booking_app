@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rental_booking_app/controllers/booking_progress_provider.dart';
+import 'package:rental_booking_app/utils/constants.dart';
 import 'package:rental_booking_app/utils/logger.dart';
+import 'package:rental_booking_app/widgets/primary_button.dart';
 import 'wheels_screen.dart';
 
 class NameScreen extends StatefulWidget {
@@ -74,7 +76,7 @@ class _NameScreenState extends State<NameScreen> {
               ),
               const SizedBox(height: 25),
 
-              _buildTextField(
+              buildTextField(
                 controller: _firstNameController,
                 label: "First Name",
                 error: "Enter a valid first name",
@@ -82,53 +84,33 @@ class _NameScreenState extends State<NameScreen> {
 
               const SizedBox(height: 15),
 
-              _buildTextField(
+              buildTextField(
                 controller: _lastNameController,
                 label: "Last Name",
                 error: "Enter a valid last name",
+              ),
+
+              const SizedBox(height: 50),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: PrimaryButton(
+                  text: "Next",
+                  // disabled: !_formKey.currentState!.validate(),
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      await _saveNameToDB();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const WheelsScreen()),
+                      );
+                    }
+                  },
+                ),
               ),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(20),
-        child: ElevatedButton(
-          onPressed: () async {
-            if (_formKey.currentState!.validate()) {
-              await _saveNameToDB();
-
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const WheelsScreen()),
-              );
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 55),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          child: const Text("Next"),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String error,
-  }) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        filled: true,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      validator: (v) => v == null || v.trim().length < 2 ? error : null,
     );
   }
 }

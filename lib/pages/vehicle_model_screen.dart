@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:rental_booking_app/controllers/vehicle_controller.dart';
 import 'package:rental_booking_app/controllers/booking_progress_provider.dart';
 import 'package:rental_booking_app/utils/logger.dart';
+import 'package:rental_booking_app/widgets/primary_button.dart';
 import '../models/vehicle_type_model.dart';
 import 'date_range_screen.dart';
 
@@ -52,81 +53,98 @@ class _VehicleModelScreenState extends State<VehicleModelScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  Expanded(
-                    child: ListView.separated(
-                      itemCount: controller.vehicleModels.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 16),
-                      itemBuilder: (context, index) {
-                        final model = controller.vehicleModels[index];
-                        final isSelected = selectedModelId == model.id;
+                  ...controller.vehicleModels.map((model) {
+                    final isSelected = selectedModelId == model.id;
 
-                        return InkWell(
-                          onTap: () {
-                            setState(() => selectedModelId = model.id);
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: InkWell(
+                        onTap: () {
+                          setState(() => selectedModelId = model.id);
 
-                            /// Save in SQLite
-                            Provider.of<BookingProgressProvider>(
-                              context,
-                              listen: false,
-                            ).updateVehicleModel(
-                              model.id,
-                              model.name,
-                              model.imageUrl ?? '',
-                            );
+                          /// Save in SQLite
+                          Provider.of<BookingProgressProvider>(
+                            context,
+                            listen: false,
+                          ).updateVehicleModel(
+                            model.id,
+                            model.name,
+                            model.imageUrl ?? '',
+                          );
 
-                            Logger.success(
-                              "Saved Vehicle Model to SQLite: ${model.id} ${model.imageUrl}",
-                            );
-                          },
-                          borderRadius: BorderRadius.circular(14),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: isSelected
-                                    ? Colors.blue
-                                    : Colors.grey.shade400,
-                                width: 2,
-                              ),
+                          Logger.success(
+                            "Saved Vehicle Model to SQLite: ${model.id} ${model.imageUrl}",
+                          );
+                        },
+                        borderRadius: BorderRadius.circular(14),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
                               color: isSelected
-                                  ? Colors.blue.withOpacity(0.08)
-                                  : Colors.transparent,
+                                  ? Colors.blue
+                                  : Colors.grey.shade400,
+                              width: 2,
                             ),
-                            child: Row(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.network(
-                                    model.imageUrl ?? "",
-                                    height: 60,
-                                    width: 100,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) =>
-                                        const Icon(Icons.drive_eta, size: 50),
+                            color: isSelected
+                                ? Colors.blue.withOpacity(0.08)
+                                : Colors.transparent,
+                          ),
+                          child: Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.network(
+                                  model.imageUrl ?? "",
+                                  height: 60,
+                                  width: 100,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) =>
+                                      const Icon(Icons.drive_eta, size: 50),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Text(
+                                  model.name,
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.w500,
                                   ),
                                 ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Text(
-                                    model.name,
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: isSelected
-                                          ? FontWeight.bold
-                                          : FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                                Icon(
-                                  isSelected
-                                      ? Icons.radio_button_checked
-                                      : Icons.radio_button_off,
-                                  color: isSelected ? Colors.blue : Colors.grey,
-                                ),
-                              ],
-                            ),
+                              ),
+                              Icon(
+                                isSelected
+                                    ? Icons.radio_button_checked
+                                    : Icons.radio_button_off,
+                                color: isSelected ? Colors.blue : Colors.grey,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+
+                  // const Spacer(),
+                  const SizedBox(height: 40),
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: PrimaryButton(
+                      text: "Next",
+                      disabled: selectedModelId == null,
+                      onPressed: () {
+                        Logger.info('Selected Model ID: $selectedModelId');
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                DateRangeScreen(modelId: selectedModelId!),
                           ),
                         );
                       },
@@ -134,32 +152,6 @@ class _VehicleModelScreenState extends State<VehicleModelScreen> {
                   ),
                 ],
               ),
-      ),
-
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(20),
-        child: ElevatedButton(
-          onPressed: selectedModelId == null
-              ? null
-              : () {
-                  Logger.info('Selected Model ID: $selectedModelId');
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          DateRangeScreen(modelId: selectedModelId!),
-                    ),
-                  );
-                },
-          style: ElevatedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 55),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          child: const Text("Next"),
-        ),
       ),
     );
   }
