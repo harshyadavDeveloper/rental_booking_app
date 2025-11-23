@@ -1,8 +1,6 @@
 name: rental_booking_app
 description: "A new Flutter project."
-# The following line prevents the package from being accidentally published to
-# pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: "none" # Remove this line if you wish to publish to pub.dev
+publish_to: "none"
 
 version: 1.0.0+1
 
@@ -19,12 +17,22 @@ dependencies:
   path_provider: ^2.1.5
   intl: ^0.20.2
   table_calendar: ^3.2.0
+  rename_app: ^1.6.5
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/rental_app.png
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/rental_app.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/rental_app.png"
