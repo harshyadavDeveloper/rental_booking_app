@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rental_booking_app/controllers/vehicle_controller.dart';
+import 'package:rental_booking_app/controllers/booking_progress_provider.dart';
 import 'package:rental_booking_app/pages/vehicle_type_screen.dart';
 import 'package:rental_booking_app/utils/logger.dart';
 
@@ -14,8 +15,6 @@ class WheelsScreen extends StatefulWidget {
 class _WheelsScreenState extends State<WheelsScreen> {
   int? selectedWheels;
 
-  final List<int> wheelsOptions = [2, 3, 4, 6]; // temporary static UI data
-
   @override
   void initState() {
     super.initState();
@@ -27,6 +26,15 @@ class _WheelsScreenState extends State<WheelsScreen> {
   Future<void> getWheels() async {
     final controller = Provider.of<VehicleController>(context, listen: false);
     controller.fetchVehicleTypes();
+  }
+
+  Future<void> _saveWheels() async {
+    final progress = Provider.of<BookingProgressProvider>(
+      context,
+      listen: false,
+    );
+    await progress.updateWheels(selectedWheels!);
+    Logger.success("Wheels saved to DB: $selectedWheels");
   }
 
   @override
@@ -53,7 +61,7 @@ class _WheelsScreenState extends State<WheelsScreen> {
                   Expanded(
                     child: ListView.separated(
                       itemCount: controller.vehicleTypes.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 12),
+                      separatorBuilder: (_, __) => const SizedBox(height: 12),
                       itemBuilder: (context, index) {
                         final item = controller.vehicleTypes[index];
                         final number = item.wheels;
@@ -63,7 +71,7 @@ class _WheelsScreenState extends State<WheelsScreen> {
                           borderRadius: BorderRadius.circular(12),
                           onTap: () {
                             setState(() => selectedWheels = number);
-                            Logger.info('selected wheels: $selectedWheels');
+                            Logger.info("Selected wheels: $selectedWheels");
                           },
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
@@ -116,7 +124,9 @@ class _WheelsScreenState extends State<WheelsScreen> {
         child: ElevatedButton(
           onPressed: selectedWheels == null
               ? null
-              : () {
+              : () async {
+                  await _saveWheels(); // SAVE THEN NAVIGATE
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(

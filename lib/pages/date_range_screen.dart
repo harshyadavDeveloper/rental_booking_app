@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rental_booking_app/controllers/booking_controller.dart';
+import 'package:rental_booking_app/controllers/booking_progress_provider.dart';
+import 'package:rental_booking_app/pages/name_screen.dart';
 import 'package:rental_booking_app/utils/logger.dart';
-import '../controllers/booking_controller.dart';
 
 class DateRangeScreen extends StatefulWidget {
   final String modelId;
@@ -28,9 +30,8 @@ class _DateRangeScreenState extends State<DateRangeScreen> {
     await controller.fetchUnavailableDates(widget.modelId);
   }
 
-  DateTime _normalizeDate(DateTime date) {
-    return DateTime.utc(date.year, date.month, date.day);
-  }
+  DateTime _normalizeDate(DateTime date) =>
+      DateTime.utc(date.year, date.month, date.day);
 
   Future<void> pickDateRange() async {
     final controller = Provider.of<BookingController>(context, listen: false);
@@ -39,8 +40,6 @@ class _DateRangeScreenState extends State<DateRangeScreen> {
       context: context,
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
-
-      // disable blocked dates
       selectableDayPredicate: (DateTime day, DateTime? start, DateTime? end) {
         final normalized = _normalizeDate(day);
         return !controller.blockedDates.contains(normalized);
@@ -75,6 +74,56 @@ class _DateRangeScreenState extends State<DateRangeScreen> {
         setState(() => selectedRange = result);
       }
     }
+  }
+
+  /// 🔹 Show Summary Dialog
+  void showSummaryDialog(BuildContext context) {
+    final progress = Provider.of<BookingProgressProvider>(
+      context,
+      listen: false,
+    ).progress;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Booking Summary"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Name: ${progress.firstName} ${progress.lastName}"),
+            Text("Wheels: ${progress.wheels}"),
+            Text("Vehicle Type ID: ${progress.vehicleTypeId}"),
+            Text("Model ID: ${progress.modelId}"),
+            // Text("Model Name: ${progress.modelName}"),
+            // Text(
+            //     "Start Date: ${progress.startDate?.day}/${progress.startDate?.month}/${progress.startDate?.year}"),
+            // Text(
+            //     "End Date: ${progress.endDate?.day}/${progress.endDate?.month}/${progress.endDate?.year}"),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Provider.of<BookingProgressProvider>(
+                context,
+                listen: false,
+              ).resetProgress();
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const NameScreen()),
+                (route) => false,
+              );
+            },
+            child: const Text("Reset"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -125,7 +174,7 @@ class _DateRangeScreenState extends State<DateRangeScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.red.withValues(alpha: 0.08),
+                        color: Colors.red.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.redAccent, width: 1.3),
                       ),
@@ -151,7 +200,6 @@ class _DateRangeScreenState extends State<DateRangeScreen> {
                     const SizedBox(height: 20),
                   ],
 
-                  // Selected range box
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
@@ -171,7 +219,6 @@ class _DateRangeScreenState extends State<DateRangeScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Pick date range button
                   ElevatedButton.icon(
                     onPressed: pickDateRange,
                     icon: const Icon(Icons.calendar_month),
@@ -183,14 +230,26 @@ class _DateRangeScreenState extends State<DateRangeScreen> {
                 ],
               ),
             ),
+
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(20),
         child: ElevatedButton(
           onPressed: selectedRange == null
               ? null
-              : () {
-                  // later: navigate to summary / POST booking
+              : () async {
                   Logger.info("Selected range: $selectedRange");
+
+                  final progressProvider = Provider.of<BookingProgressProvider>(
+                    context,
+                    listen: false,
+                  );
+
+                  await progressProvider.updateStartEndDates(
+                    selectedRange!.start,
+                    selectedRange!.end,
+                  );
+
+                  if (mounted) showSummaryDialog(context);
                 },
           style: ElevatedButton.styleFrom(
             minimumSize: const Size(double.infinity, 55),

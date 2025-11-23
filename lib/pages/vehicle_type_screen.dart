@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rental_booking_app/controllers/vehicle_controller.dart';
+import 'package:rental_booking_app/controllers/booking_progress_provider.dart';
 import 'package:rental_booking_app/utils/logger.dart';
 import 'vehicle_model_screen.dart';
 
@@ -17,21 +18,21 @@ class _VehicleTypeScreenState extends State<VehicleTypeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<VehicleController>(context);
+    final vehicleController = Provider.of<VehicleController>(context);
 
-    /// Filter data from API by selected wheels
-    final filteredTypes = controller.vehicleTypes
+    /// Filter based on selected wheels
+    final filteredTypes = vehicleController.vehicleTypes
         .where((e) => e.wheels == widget.wheels)
         .toList();
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Vehicle Type"), elevation: 0),
+      appBar: AppBar(title: const Text("Vehicle Type")),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: controller.isLoading
+        child: vehicleController.isLoading
             ? const Center(child: CircularProgressIndicator())
-            : controller.error != null
-            ? Center(child: Text(controller.error!))
+            : vehicleController.error != null
+            ? Center(child: Text(vehicleController.error!))
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -44,7 +45,7 @@ class _VehicleTypeScreenState extends State<VehicleTypeScreen> {
                   Expanded(
                     child: ListView.separated(
                       itemCount: filteredTypes.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 14),
+                      separatorBuilder: (_, __) => const SizedBox(height: 14),
                       itemBuilder: (context, index) {
                         final type = filteredTypes[index];
                         final isSelected = selectedTypeId == type.id;
@@ -52,8 +53,19 @@ class _VehicleTypeScreenState extends State<VehicleTypeScreen> {
                         return InkWell(
                           onTap: () {
                             setState(() => selectedTypeId = type.id);
+
+                            Logger.info("Clicked Vehicle Type: ${type.name}");
+
+                            /// Save to SQLite using Provider
+                            Provider.of<BookingProgressProvider>(
+                              context,
+                              listen: false,
+                            ).updateVehicleType(type.id, type.name);
+
+                            Logger.success(
+                              "Saved Vehicle Type to SQLite: ${type.id}",
+                            );
                           },
-                          borderRadius: BorderRadius.circular(12),
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
                             padding: const EdgeInsets.symmetric(
@@ -109,7 +121,6 @@ class _VehicleTypeScreenState extends State<VehicleTypeScreen> {
                   final selectedType = filteredTypes.firstWhere(
                     (e) => e.id == selectedTypeId,
                   );
-                  Logger.info("selected type ${selectedType.id}");
 
                   Navigator.push(
                     context,
