@@ -39,9 +39,14 @@ class BookingProgressProvider extends ChangeNotifier {
     await updateField("vehicleTypeName", typeName);
   }
 
-  Future<void> updateVehicleModel(String modelId, String modelName) async {
+  Future<void> updateVehicleModel(
+    String modelId,
+    String modelName,
+    String imageUrl,
+  ) async {
     await updateField("modelId", modelId);
     await updateField("modelName", modelName);
+    await updateField("modelImageUrl", imageUrl);
   }
 
   Future<void> updateStartEndDates(DateTime start, DateTime end) async {

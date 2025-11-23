@@ -68,10 +68,14 @@ class _VehicleModelScreenState extends State<VehicleModelScreen> {
                             Provider.of<BookingProgressProvider>(
                               context,
                               listen: false,
-                            ).updateVehicleModel(model.id, model.name);
+                            ).updateVehicleModel(
+                              model.id,
+                              model.name,
+                              model.imageUrl ?? '',
+                            );
 
                             Logger.success(
-                              "Saved Vehicle Model to SQLite: ${model.id}",
+                              "Saved Vehicle Model to SQLite: ${model.id} ${model.imageUrl}",
                             );
                           },
                           borderRadius: BorderRadius.circular(14),

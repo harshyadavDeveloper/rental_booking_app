@@ -95,11 +95,36 @@ class _DateRangeScreenState extends State<DateRangeScreen> {
             Text("Wheels: ${progress.wheels}"),
             Text("Vehicle Type ID: ${progress.vehicleTypeId}"),
             Text("Model ID: ${progress.modelId}"),
-            // Text("Model Name: ${progress.modelName}"),
-            // Text(
-            //     "Start Date: ${progress.startDate?.day}/${progress.startDate?.month}/${progress.startDate?.year}"),
-            // Text(
-            //     "End Date: ${progress.endDate?.day}/${progress.endDate?.month}/${progress.endDate?.year}"),
+            Text("Model Name: ${progress.modelName}"),
+            if (progress.modelImageUrl != null &&
+                progress.modelImageUrl!.isNotEmpty)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  progress.modelImageUrl!,
+                  height: 90,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) =>
+                      const Icon(Icons.car_crash, size: 60, color: Colors.grey),
+                ),
+              ),
+
+            if (progress.startDate != null)
+              Text(
+                "Start Date: "
+                "${DateTime.parse(progress.startDate!).day}/"
+                "${DateTime.parse(progress.startDate!).month}/"
+                "${DateTime.parse(progress.startDate!).year}",
+              ),
+
+            if (progress.endDate != null)
+              Text(
+                "End Date: "
+                "${DateTime.parse(progress.endDate!).day}/"
+                "${DateTime.parse(progress.endDate!).month}/"
+                "${DateTime.parse(progress.endDate!).year}",
+              ),
           ],
         ),
         actions: [

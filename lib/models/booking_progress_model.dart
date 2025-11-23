@@ -7,6 +7,7 @@ class BookingProgressModel {
   String? vehicleTypeName;
   String? modelId;
   String? modelName;
+  String? modelImageUrl;
   String? startDate;
   String? endDate;
 
@@ -19,6 +20,7 @@ class BookingProgressModel {
     this.vehicleTypeName,
     this.modelId,
     this.modelName,
+    this.modelImageUrl,
     this.startDate,
     this.endDate,
   });
@@ -50,6 +52,7 @@ class BookingProgressModel {
       vehicleTypeName: map["vehicleTypeName"],
       modelId: map["modelId"],
       modelName: map["modelName"],
+      modelImageUrl: map['modelImageUrl'],
       startDate: map["startDate"],
       endDate: map["endDate"],
     );

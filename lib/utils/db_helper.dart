@@ -31,6 +31,7 @@ class DBHelper {
         vehicleTypeName TEXT,
         modelId TEXT,
         modelName TEXT,
+        modelImageUrl TEXT,
         startDate TEXT,
         endDate TEXT
       )
