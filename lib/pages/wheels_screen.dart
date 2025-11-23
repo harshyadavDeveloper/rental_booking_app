@@ -4,6 +4,7 @@ import 'package:rental_booking_app/controllers/vehicle_controller.dart';
 import 'package:rental_booking_app/controllers/booking_progress_provider.dart';
 import 'package:rental_booking_app/pages/vehicle_type_screen.dart';
 import 'package:rental_booking_app/utils/logger.dart';
+import 'package:rental_booking_app/widgets/primary_button.dart';
 
 class WheelsScreen extends StatefulWidget {
   const WheelsScreen({super.key});
@@ -57,60 +58,74 @@ class _WheelsScreenState extends State<WheelsScreen> {
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 25),
-
-                  Expanded(
-                    child: ListView.separated(
-                      itemCount: controller.vehicleTypes.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
-                        final item = controller.vehicleTypes[index];
-                        final number = item.wheels;
-                        final isSelected = selectedWheels == number;
-
-                        return InkWell(
-                          borderRadius: BorderRadius.circular(12),
-                          onTap: () {
-                            setState(() => selectedWheels = number);
-                            Logger.info("Selected wheels: $selectedWheels");
-                          },
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 18,
-                              horizontal: 16,
-                            ),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: isSelected
-                                    ? Colors.blueAccent
-                                    : Colors.grey.shade400,
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
+                  // List of items (not expanded)
+                  ...controller.vehicleTypes.map((item) {
+                    final number = item.wheels;
+                    final isSelected = selectedWheels == number;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () {
+                          setState(() => selectedWheels = number);
+                          Logger.info("Selected wheels: $selectedWheels");
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 18,
+                            horizontal: 16,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(
                               color: isSelected
-                                  ? Colors.blue.withValues(alpha: 0.08)
-                                  : Colors.transparent,
+                                  ? Colors.blueAccent
+                                  : Colors.grey.shade400,
+                              width: 2,
                             ),
-                            child: Row(
-                              children: [
-                                Text(
-                                  "$number Wheels",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: isSelected
-                                        ? FontWeight.bold
-                                        : FontWeight.w500,
-                                  ),
+                            borderRadius: BorderRadius.circular(12),
+                            color: isSelected
+                                ? Colors.blue.withValues(alpha: 0.08)
+                                : Colors.transparent,
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                "$number Wheels",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.w500,
                                 ),
-                                const Spacer(),
-                                Icon(
-                                  isSelected
-                                      ? Icons.radio_button_checked
-                                      : Icons.radio_button_off,
-                                  color: isSelected ? Colors.blue : Colors.grey,
-                                ),
-                              ],
-                            ),
+                              ),
+                              const Spacer(),
+                              Icon(
+                                isSelected
+                                    ? Icons.radio_button_checked
+                                    : Icons.radio_button_off,
+                                color: isSelected ? Colors.blue : Colors.grey,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                  // const Spacer(), // This pushes button to bottom but not screen bottom
+                  const SizedBox(height: 40),
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: PrimaryButton(
+                      text: "Next",
+                      disabled: selectedWheels == null,
+                      onPressed: () async {
+                        await _saveWheels();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                VehicleTypeScreen(wheels: selectedWheels!),
                           ),
                         );
                       },
@@ -118,31 +133,6 @@ class _WheelsScreenState extends State<WheelsScreen> {
                   ),
                 ],
               ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(20),
-        child: ElevatedButton(
-          onPressed: selectedWheels == null
-              ? null
-              : () async {
-                  await _saveWheels(); // SAVE THEN NAVIGATE
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          VehicleTypeScreen(wheels: selectedWheels!),
-                    ),
-                  );
-                },
-          style: ElevatedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 55),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          child: const Text("Next"),
-        ),
       ),
     );
   }

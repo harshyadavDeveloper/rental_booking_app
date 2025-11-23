@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:rental_booking_app/controllers/vehicle_controller.dart';
 import 'package:rental_booking_app/controllers/booking_progress_provider.dart';
 import 'package:rental_booking_app/utils/logger.dart';
+import 'package:rental_booking_app/widgets/primary_button.dart';
 import 'vehicle_model_screen.dart';
 
 class VehicleTypeScreen extends StatefulWidget {
@@ -42,68 +43,87 @@ class _VehicleTypeScreenState extends State<VehicleTypeScreen> {
                   ),
                   const SizedBox(height: 25),
 
-                  Expanded(
-                    child: ListView.separated(
-                      itemCount: filteredTypes.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 14),
-                      itemBuilder: (context, index) {
-                        final type = filteredTypes[index];
-                        final isSelected = selectedTypeId == type.id;
+                  ...filteredTypes.map((type) {
+                    final isSelected = selectedTypeId == type.id;
 
-                        return InkWell(
-                          onTap: () {
-                            setState(() => selectedTypeId = type.id);
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 14),
+                      child: InkWell(
+                        onTap: () {
+                          setState(() => selectedTypeId = type.id);
 
-                            Logger.info("Clicked Vehicle Type: ${type.name}");
+                          Logger.info("Clicked Vehicle Type: ${type.name}");
 
-                            /// Save to SQLite using Provider
-                            Provider.of<BookingProgressProvider>(
-                              context,
-                              listen: false,
-                            ).updateVehicleType(type.id, type.name);
+                          /// Save to SQLite using Provider
+                          Provider.of<BookingProgressProvider>(
+                            context,
+                            listen: false,
+                          ).updateVehicleType(type.id, type.name);
 
-                            Logger.success(
-                              "Saved Vehicle Type to SQLite: ${type.id}",
-                            );
-                          },
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 18,
-                              horizontal: 16,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: isSelected
-                                    ? Colors.blue
-                                    : Colors.grey.shade400,
-                                width: 2,
-                              ),
+                          Logger.success(
+                            "Saved Vehicle Type to SQLite: ${type.id}",
+                          );
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 18,
+                            horizontal: 16,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
                               color: isSelected
-                                  ? Colors.blue.withValues(alpha: 0.07)
-                                  : Colors.transparent,
+                                  ? Colors.blue
+                                  : Colors.grey.shade400,
+                              width: 2,
                             ),
-                            child: Row(
-                              children: [
-                                Text(
-                                  type.name,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: isSelected
-                                        ? FontWeight.bold
-                                        : FontWeight.w500,
-                                  ),
+                            color: isSelected
+                                ? Colors.blue.withValues(alpha: 0.07)
+                                : Colors.transparent,
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                type.name,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.w500,
                                 ),
-                                const Spacer(),
-                                Icon(
-                                  isSelected
-                                      ? Icons.radio_button_checked
-                                      : Icons.radio_button_off,
-                                  color: isSelected ? Colors.blue : Colors.grey,
-                                ),
-                              ],
-                            ),
+                              ),
+                              const Spacer(),
+                              Icon(
+                                isSelected
+                                    ? Icons.radio_button_checked
+                                    : Icons.radio_button_off,
+                                color: isSelected ? Colors.blue : Colors.grey,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+
+                  // const Spacer(),
+                  const SizedBox(height: 40),
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: PrimaryButton(
+                      text: "Next",
+                      disabled: selectedTypeId == null,
+                      onPressed: () {
+                        final selectedType = filteredTypes.firstWhere(
+                          (e) => e.id == selectedTypeId,
+                        );
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                VehicleModelScreen(vehicleType: selectedType),
                           ),
                         );
                       },
@@ -111,33 +131,6 @@ class _VehicleTypeScreenState extends State<VehicleTypeScreen> {
                   ),
                 ],
               ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(20),
-        child: ElevatedButton(
-          onPressed: selectedTypeId == null
-              ? null
-              : () {
-                  final selectedType = filteredTypes.firstWhere(
-                    (e) => e.id == selectedTypeId,
-                  );
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          VehicleModelScreen(vehicleType: selectedType),
-                    ),
-                  );
-                },
-          style: ElevatedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 55),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          child: const Text("Next"),
-        ),
       ),
     );
   }
