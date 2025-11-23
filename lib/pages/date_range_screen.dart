@@ -129,11 +129,14 @@ class _DateRangeScreenState extends State<DateRangeScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              Provider.of<BookingProgressProvider>(
+            onPressed: () async {
+              final progressProvider = Provider.of<BookingProgressProvider>(
                 context,
                 listen: false,
-              ).resetProgress();
+              );
+
+              await progressProvider.resetProgress(); // clear db + memory reset
+              await progressProvider.loadProgress(); // load fresh empty data
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (_) => const NameScreen()),
