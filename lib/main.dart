@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rental_booking_app/controllers/booking_controller.dart';
+import 'package:rental_booking_app/controllers/booking_progress_provider.dart';
 import 'package:rental_booking_app/controllers/vehicle_controller.dart';
 import 'package:rental_booking_app/pages/name_screen.dart';
 
@@ -16,6 +17,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => VehicleController()),
         ChangeNotifierProvider(create: (_) => BookingController()),
+        ChangeNotifierProvider(
+          create: (_) => BookingProgressProvider()..loadProgress(),
+        ),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

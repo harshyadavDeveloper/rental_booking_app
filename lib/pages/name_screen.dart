@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:rental_booking_app/controllers/booking_progress_provider.dart';
+import 'package:rental_booking_app/utils/logger.dart';
 import 'wheels_screen.dart';
 
 class NameScreen extends StatefulWidget {
@@ -13,6 +16,42 @@ class _NameScreenState extends State<NameScreen> {
 
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Load saved progress
+    Future.microtask(() async {
+      final progress = Provider.of<BookingProgressProvider>(
+        context,
+        listen: false,
+      ).progress;
+      _firstNameController.text = progress.firstName ?? "";
+      _lastNameController.text = progress.lastName ?? "";
+    });
+  }
+
+  Future<void> _saveNameToDB() async {
+    final provider = Provider.of<BookingProgressProvider>(
+      context,
+      listen: false,
+    );
+
+    await provider.updateField("firstName", _firstNameController.text.trim());
+    await provider.updateField("lastName", _lastNameController.text.trim());
+
+    Logger.info(
+      "📌 Saved to DB → First Name: ${_firstNameController.text}, Last Name: ${_lastNameController.text}",
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,8 +94,10 @@ class _NameScreenState extends State<NameScreen> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(20),
         child: ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             if (_formKey.currentState!.validate()) {
+              await _saveNameToDB();
+
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const WheelsScreen()),

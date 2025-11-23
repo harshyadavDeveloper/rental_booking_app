@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rental_booking_app/controllers/vehicle_controller.dart';
+import 'package:rental_booking_app/controllers/booking_progress_provider.dart';
 import 'package:rental_booking_app/utils/logger.dart';
 import '../models/vehicle_type_model.dart';
 import 'date_range_screen.dart';
@@ -54,14 +55,29 @@ class _VehicleModelScreenState extends State<VehicleModelScreen> {
                   Expanded(
                     child: ListView.separated(
                       itemCount: controller.vehicleModels.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 16),
+                      separatorBuilder: (_, __) => const SizedBox(height: 16),
                       itemBuilder: (context, index) {
                         final model = controller.vehicleModels[index];
                         final isSelected = selectedModelId == model.id;
 
                         return InkWell(
-                          onTap: () =>
-                              setState(() => selectedModelId = model.id),
+                          onTap: () {
+                            setState(() => selectedModelId = model.id);
+
+                            /// Save in SQLite
+                            Provider.of<BookingProgressProvider>(
+                              context,
+                              listen: false,
+                            ).updateVehicleModel(
+                              model.id,
+                              model.name,
+                              model.imageUrl ?? '',
+                            );
+
+                            Logger.success(
+                              "Saved Vehicle Model to SQLite: ${model.id} ${model.imageUrl}",
+                            );
+                          },
                           borderRadius: BorderRadius.circular(14),
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
@@ -75,7 +91,7 @@ class _VehicleModelScreenState extends State<VehicleModelScreen> {
                                 width: 2,
                               ),
                               color: isSelected
-                                  ? Colors.blue.withValues(alpha: 0.08)
+                                  ? Colors.blue.withOpacity(0.08)
                                   : Colors.transparent,
                             ),
                             child: Row(
@@ -87,7 +103,7 @@ class _VehicleModelScreenState extends State<VehicleModelScreen> {
                                     height: 60,
                                     width: 100,
                                     fit: BoxFit.cover,
-                                    errorBuilder: (_, _, _) =>
+                                    errorBuilder: (_, __, ___) =>
                                         const Icon(Icons.drive_eta, size: 50),
                                   ),
                                 ),
@@ -126,7 +142,8 @@ class _VehicleModelScreenState extends State<VehicleModelScreen> {
           onPressed: selectedModelId == null
               ? null
               : () {
-                  Logger.info('selected model id: $selectedModelId');
+                  Logger.info('Selected Model ID: $selectedModelId');
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
