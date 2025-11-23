@@ -1,7 +1,8 @@
 
 # Rental App
 
-An app where you can rent your desire car without extra charges
+A clean and simple rental booking application built using Flutter.
+Users can book a vehicle by selecting step-by-step options like wheels, type, model, and rental date range.
 
 
 ## Acknowledgements
@@ -14,6 +15,40 @@ An app where you can rent your desire car without extra charges
 - [Harsh Yadav](https://github.com/harshyadavDeveloper)
 
 
+## Tech Stack
+
+| Category             | Technology                         |
+| -------------------- | ---------------------------------- |
+| Framework            | Flutter (Material Design)          |
+| Programming Language | Dart                               |
+| State Management     | Provider                           |
+| Local Database       | SQLite (sqflite)                   |
+| Networking           | Dio (REST API Integration)         |
+| Routing              | Navigator API                      |
+| UI Enhancements      | Table Calendar                     |
+| App Metadata & Icons | flutter_launcher_icons, rename_app |
+
+## Features
+
+✨ Features
+
+🧍 User enters name (First & Last)
+
+🚘 Choose number of wheels (2 / 3 / 4 / 6)
+
+🚗 Select vehicle type — dynamically fetched from API
+
+🚙 Select vehicle model with name & images
+
+📅 Date range selector with unavailable dates blocked (API-driven)
+
+🔄 Saves progress using SQLite so the user can continue later
+
+❌ Validation and inline error messages for better input handling
+
+🎨 Clean UI & smooth navigation with Material Design components
+
+📱 Fully responsive on Android/iOS
 ## Installation
 
 Install my-project with flutter
@@ -39,4 +74,9 @@ make sure you have the flutter sdk in your system
 ![Date Screen](https://i.ibb.co/yDTPZdx/date.jpg)
 
 
+
+
+## Demo
+
+Insert gif or link to demo
 
