@@ -1,16 +1,42 @@
-# rental_booking_app
 
-A new Flutter project.
+# Rental App
 
-## Getting Started
+An app where you can rent your desire car without extra charges
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+## Acknowledgements
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+ - [Code Verse](https://harsh-codeverse.netlify.app)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+## Authors
+
+- [Harsh Yadav](https://github.com/harshyadavDeveloper)
+
+
+## Installation
+
+Install my-project with flutter
+make sure you have the flutter sdk in your system
+
+```bash
+  git clone https://github.com/harshyadavDeveloper/rental_booking_app.git
+  cd <project-name>
+  flutter pub get (install dependencies)
+  flutter run
+```
+    
+## Screenshots
+
+![Name Screen](https://i.ibb.co/TMdnHYf1/name-screen.jpg)
+
+![Wheels Screen](https://i.ibb.co/G4KpmNyB/wheel-screen.jpg)
+
+![Vehicle Type Screen](https://i.ibb.co/0RZVSmDh/vehicle-type.jpg)
+
+![Model Screen](https://i.ibb.co/twvC2CLC/model-screen.jpg)
+
+![Date Screen](https://i.ibb.co/yDTPZdx/date.jpg)
+
+
+
